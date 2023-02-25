@@ -1,7 +1,7 @@
 use crate::random::{Lcg, LcgTrait};
 
 use crate::tensor::TensorTrait;
-use crate::{layer_trait::LayerTrait, layers::{SoftmaxWithLoss, AffineLayer, ReluLayer}, tensor::{Tensor2d, Tensor, Tensor1d}};
+use crate::{layer_trait::LayerTrait, layers::{SoftmaxWithLoss, AffineLayer, ReluLayer}, tensor::{Tensor2d, Tensor1d}};
 
 
 
@@ -15,7 +15,6 @@ pub struct TwoLayerNet<
     affine1: AffineLayer<f32, INPUT_SIZE, HIDDEN_SIZE, BATCH_SIZE>,
     relu: ReluLayer<HIDDEN_SIZE, BATCH_SIZE>,
     affine2: AffineLayer<f32, HIDDEN_SIZE, OUTPUT_SIZE, BATCH_SIZE>,
-    last_layer: SoftmaxWithLoss,
 
     //temp value store
     hidden: Tensor2d<f32, HIDDEN_SIZE, BATCH_SIZE>,
@@ -28,7 +27,7 @@ impl<
     const OUTPUT_SIZE: usize,
     const BATCH_SIZE: usize,
 > TwoLayerNet<INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE, BATCH_SIZE> {
-    pub fn new(weight_init_std: f32, rng: &mut Lcg) -> Self {
+    pub fn new(weight_init_std: f32, lcg: &mut Lcg) -> Self {
         /*
         layer1
             input_size -> hidden_size
@@ -40,7 +39,6 @@ impl<
             matrix.horizontal: output_size
         */
         //random generator
-        let mut lcg: Lcg = Lcg::new(0);
 
         //init weights with lcg
         let mut weight1: Tensor2d<f32, HIDDEN_SIZE, INPUT_SIZE> 
@@ -74,7 +72,7 @@ impl<
         let affine1: AffineLayer<f32, INPUT_SIZE, HIDDEN_SIZE, BATCH_SIZE> = AffineLayer::new(weight1, bias1);
         let relu = ReluLayer::new();
         let affine2: AffineLayer<f32, HIDDEN_SIZE, OUTPUT_SIZE, BATCH_SIZE> = AffineLayer::new(weight2, bias2);
-        let last_layer = SoftmaxWithLoss::new();
+        //let last_layer = SoftmaxWithLoss::new();
 
         let hidden = Tensor2d::<f32, HIDDEN_SIZE, BATCH_SIZE>::new();
         let hidden_relu = hidden.clone();
@@ -84,7 +82,6 @@ impl<
             affine1,
             relu,
             affine2,
-            last_layer,
 
             hidden,
             hidden_relu,
@@ -92,18 +89,19 @@ impl<
         }
     }
 
-    pub fn predict(&mut self, input: &Tensor2d<f32, INPUT_SIZE, BATCH_SIZE>) -> &Tensor2d<f32, OUTPUT_SIZE, BATCH_SIZE> {
+    pub fn predict(&mut self, input: &Tensor2d<f32, INPUT_SIZE, BATCH_SIZE>) -> Tensor2d<f32, OUTPUT_SIZE, BATCH_SIZE> {
         self.affine1.predict(&input, &mut self.hidden);
         self.relu.predict(&self.hidden, &mut self.hidden_relu);
-        self.affine2.predict(&self.hidden_relu, &mut self.out);
-        return &self.out;
+        let mut out = Tensor2d::new();
+        self.affine2.predict(&self.hidden_relu, &mut out);
+        return out;
     }
 
     //no grad
     pub fn loss(&mut self, input: &mut Tensor2d<f32, INPUT_SIZE, BATCH_SIZE>, label: &Tensor1d<usize, BATCH_SIZE>) -> f32 {
         let mut predict = self.predict(input);
 
-        SoftmaxWithLoss::loss(input, label);
+        SoftmaxWithLoss::loss(&mut predict, label);
 
         let mut loss_sum: f64 = 0.0;
         for data in input.body.iter() {

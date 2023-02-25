@@ -1,5 +1,3 @@
-use crate::random::Lcg;
-
 use super::{Num, TensorTrait};
 
 
@@ -24,26 +22,26 @@ Tensor2d<T, O, I>
 #[derive(Clone)]
 pub struct Tensor2d<T, const H: usize, const V: usize> {
     //vertical len: V, horizontal len: H
-    pub body: [[T; H]; V],
+    pub body: Box<[[T; H]; V]>,
     pub length: [usize; 2],
 }
 impl<T: Num, const H: usize, const V: usize> Tensor2d<T, H, V> {
     pub fn new_fill_with(init: T) -> Self {
         Self {
-            body: [[init; H]; V],
+            body: Box::new([[init; H]; V]),
             length: [V, H],
         }
     }
     
     pub fn new_from_array(array: [[T; H]; V]) -> Self {
         Self {
-            body: array,
+            body: Box::new(array),
             length: [V, H],
         }
     }
 
     pub fn new_from_vec(vec: Vec<[T; H]>) -> Self {
-        let mut body = [[T::default(); H]; V];
+        let mut body = Box::new([[T::default(); H]; V]);
         for (self_row, vec_row) in body.iter_mut().zip(vec.iter()) {
             for (self_i, vec_i) in self_row.iter_mut().zip(vec_row.iter()) {
                 *self_i = *vec_i;
@@ -56,7 +54,7 @@ impl<T: Num, const H: usize, const V: usize> Tensor2d<T, H, V> {
     }
 
     pub fn new_from_slices(slices: &[&[T]]) -> Self {
-        let mut body = [[T::default(); H]; V];
+        let mut body = Box::new([[T::default(); H]; V]);
         for (self_row, slice_row) in body.iter_mut().zip(slices.iter()) {
             for (self_i, slice_i) in self_row.iter_mut().zip(slice_row.iter()) {
                 *self_i = *slice_i;
@@ -82,7 +80,7 @@ impl<T: Num, const H: usize, const V: usize> Tensor2d<T, H, V> {
 impl<T: Num, const H: usize, const V: usize> TensorTrait<T> for Tensor2d<T, H, V> {
     fn new() -> Self {
         Self {
-            body: [[T::default(); H]; V],
+            body: Box::new([[T::default(); H]; V]),
             length: [V, H],
         }
     }
@@ -273,7 +271,7 @@ impl<T: Num, const H: usize, const V: usize> std::ops::RemAssign for Tensor2d<T,
 impl<const H: usize, const V: usize> Tensor2d<bool, H, V> {
     pub fn new_bool() -> Self {
         Self {
-            body: [[false; H]; V],
+            body: Box::new([[false; H]; V]),
             length: [H, V],
         }
     }

@@ -3,9 +3,6 @@ use crate::{tensor::{Num, Tensor2d, Tensor1d, TensorTrait, self}};
 pub struct SoftmaxWithLoss {
 }
 impl SoftmaxWithLoss {
-    pub fn new() -> Self {
-        Self {}
-    }
     pub fn loss<T: Num, const IO: usize, const B: usize>(input_and_loss_out: &mut Tensor2d<T, IO, B>, label: &Tensor1d<usize, B>) {
         let mut softmax_result: Tensor2d<T, IO, B> = Tensor2d::new();
         tensor::softmax_per_batch(&input_and_loss_out, &mut softmax_result);

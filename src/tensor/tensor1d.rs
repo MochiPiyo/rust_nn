@@ -1,24 +1,22 @@
-use crate::random::Lcg;
-
 use super::{Num, TensorTrait, Tensor2d};
 
 #[derive(Clone)]
 pub struct Tensor1d<T, const N: usize> {
-    pub body: [T; N],
+    pub body: Box<[T; N]>,
 
     pub length: usize,
 }
 impl<T: Num, const N: usize> Tensor1d<T, N> {
     pub fn new_fill_with(init: T) -> Self {
         Self {
-            body: [init; N],
+            body: Box::new([init; N]),
             length: N,
         }
     }
 
     pub fn new_from_array(array: [T; N]) -> Self {
         Self {
-            body: array,
+            body: Box::new(array),
             length: N,
         }
     }
@@ -29,7 +27,7 @@ impl<T: Num, const N: usize> Tensor1d<T, N> {
         }else if vec.len() > N {
             return Err(format!("vec is to long. vec.len() = {}, while expect length is {}", vec.len(), N));
         }
-        let mut body = [T::default(); N];
+        let mut body = Box::new([T::default(); N]);
         for i in 0..N {
             body[i] = vec[i];
         }
@@ -42,13 +40,13 @@ impl<T: Num, const N: usize> Tensor1d<T, N> {
     
     pub fn to_tensor2d_as_row(&self) -> Tensor2d<T, N, 1> {
         Tensor2d::<T, N, 1> {
-            body: [self.body.clone(); 1],
+            body: Box::new([*self.body.clone(); 1]),
             length: [1, N],
         }
     }
 
     pub fn to_tensor2d_as_col(&self) -> Tensor2d<T, 1, N> {
-        let mut body = [[T::default();1]; N];
+        let mut body = Box::new([[T::default();1]; N]);
         for (body_i, self_i) in body.iter_mut().zip(self.body.iter()) {
             *body_i = [*self_i];
         }
@@ -62,7 +60,7 @@ impl<T: Num, const N: usize> Tensor1d<T, N> {
 impl<T: Num, const N: usize> TensorTrait<T> for Tensor1d<T, N> {
     fn new() -> Self {
         Self {
-            body: [T::default(); N],
+            body: Box::new([T::default(); N]),
             length: N,
         }
     }
@@ -216,7 +214,7 @@ impl<T: Num, const N: usize> std::ops::RemAssign for Tensor1d<T, N> {
 impl<const N: usize> Tensor1d<usize, N> {
     pub fn new_usize() -> Self {
         Self {
-            body: [0; N],
+            body: Box::new([0; N]),
             length: N,
         }
     }

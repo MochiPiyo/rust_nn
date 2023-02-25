@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::{tensor::{Tensor2d, TensorTrait, Tensor1d}, random::{Lcg, LcgTrait}};
 
 //(data, label)
@@ -101,14 +99,16 @@ pub fn selialize_minst(image_datas: &[[[u8; NUMBER_OF_COLUMNS]; NUMBER_OF_ROWS]]
 pub fn select_random_n<const BATCH_SIZE: usize>
     (datas: &Vec<[u8; 784]>, labels: &Vec<usize>, lcg: &mut Lcg) -> (Tensor2d<f32, 784, BATCH_SIZE>, Tensor1d<usize, BATCH_SIZE>)
 {
+    dbg!("select random");
     let max = datas.len();
     use std::collections::HashSet;
-    let mut is_selected: HashSet<usize> = HashSet::new();
+    let mut is_selected: HashSet<u32> = HashSet::new();
 
     //select set of usize
     let mut select = 0;
     loop {
-        let this = (max as f32 * lcg.gen_0to1()) as usize;
+        //0 + rand() * (max - min + 1) / (1 + RAND_MAX)
+        let this = lcg.gen() * max as u32 / u32::MAX;
         if is_selected.contains(&this) {
             continue;
         }else {
@@ -119,16 +119,17 @@ pub fn select_random_n<const BATCH_SIZE: usize>
             }
         }
     }
+    dbg!("determin select numbes");
 
     let mut batch_datas: Tensor2d<f32, 784, BATCH_SIZE> = Tensor2d::new();
     for (i, target) in is_selected.iter().zip(batch_datas.body.iter_mut()) {
-        for (data_i, target_i) in datas[*i].iter().zip(target.iter_mut()) {
+        for (data_i, target_i) in datas[*i as usize].iter().zip(target.iter_mut()) {
             *target_i = *data_i as f32;
         }
     }
     let mut batch_labels: Tensor1d<usize, BATCH_SIZE> = Tensor1d::new_usize();
     for (i, target_i) in is_selected.iter().zip(batch_labels.body.iter_mut()) {
-        *target_i = labels[*i];
+        *target_i = labels[*i as usize];
     }
 
     return (batch_datas, batch_labels);

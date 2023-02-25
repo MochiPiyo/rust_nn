@@ -54,7 +54,7 @@ impl<T: Num, const I: usize, const O: usize, const B: usize> LayerTrait<T, I, O,
         //get doutput for next layer
         //init doutput value by bias (= add bias fist to prevent unnecessary initialization with 0)
         for data in output.body.iter_mut() {
-            *data = self.bias.body.clone();
+            *data = *self.bias.body.clone();
         }
         //output += mul(input, weight)
         add_matrix_mul(input, &self.weight, output);

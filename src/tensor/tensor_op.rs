@@ -1,7 +1,7 @@
 use super::{Num, tensor1d::Tensor1d, tensor2d::Tensor2d};
 
 
-pub fn inner_product<T: Num, const N: usize>
+pub fn _inner_product<T: Num, const N: usize>
     (left: Tensor1d<T, N>, right: Tensor1d<T, N>, zero: T) -> T
 {
     let mut sum = zero;
@@ -32,7 +32,7 @@ pub fn add_matrix_mul<T: Num, const N: usize, const M: usize, const S: usize>
     for i_n in 0..N {
         for k_m in 0..M {
             for j_s in 0..S {
-                output.body[i_n][j_s] = left.body[i_n][k_m] * right.body[k_m][j_s];
+                output.body[k_m][j_s] = left.body[k_m][i_n] * right.body[i_n][j_s];
             }
         }
     }
