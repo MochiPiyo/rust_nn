@@ -103,21 +103,4 @@ pub trait Tensor<T: Num, Rhs = Self, Output = Self>:
 
 
 
-/*
-TensorTrait defines operation to change self value
-    example: add(&mut self, other: Self); //no return
-and then,
-impl operator(+, -, *,...) trait, which creates new object, using TensorTrait fnctions.
-example:
----------------------------------------------
-    fn add(self, rhs: Self) -> Self::Output {
-        let out = self.clone(); //create new.
-        return out.add(rhs); //add operation in TensorTrait
-    }
-----------------------------------------------
- */
-
-
-
-
 
