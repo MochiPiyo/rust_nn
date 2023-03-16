@@ -1,14 +1,15 @@
 # Non dependence Neural Net with Rust
 ## Second challenge
+
+`log
 2023_02_26 created
-
 2023_03_16 learing ok, with He init.
-
+`
 
 ## problems of previous cuallenge 
 the previous challenge was failed to make it "learn" the network because code was too complicated to find where the bug code is. The biggest factor is that "greedy translating" python code, especially numpy, made the code worse archtectured for Rust.
 
-## improvement points !
+## improvemed points !
 So, this time, 
 - define tensor and tensor operation
 - const generics for layer size and their io tensor operation
