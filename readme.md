@@ -1,6 +1,7 @@
 # Non dependence Neural Net with Rust
 ## Second challenge
 2023_02_26 created
+r
 2023_03_16 learing ok, with He init.
 
 
