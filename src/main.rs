@@ -30,8 +30,9 @@ fn main() {
     
     //model setting
     const INPUT_SIZE: usize = 784;//28*28
-    const HIDDEN_SIZE: usize = 50;
+    const HIDDEN_SIZE: usize = 200;
     const OUTPUT_SIZE: usize = 10;
+
     const BATCH_SIZE: usize = 100;
     let weight_init_std: f32 = 0.01;
     let mut lcg = Lcg::new(0);
@@ -40,9 +41,9 @@ fn main() {
         = TwoLayerNet::new(weight_init_std, &mut lcg);
     
     //train setting
-    const EPOCH_NUM: usize = 1000;
-    const PRINT_INTERVAL_OF_EPOCH: usize = 10;
-    const LEARNING_RATE: f32 = 0.1;
+    const EPOCH_NUM: usize = 10000;
+    const PRINT_INTERVAL_OF_EPOCH: usize = 100;
+    const LEARNING_RATE: f32 = 0.01;
     println!("iter num: {}, batch size: {}, learning rate: {}", EPOCH_NUM, BATCH_SIZE, LEARNING_RATE);
     
     let mut train_loss_list = Vec::new();
@@ -51,7 +52,7 @@ fn main() {
 
     println!("---train start---");
     for epoch in 0..EPOCH_NUM {
-        println!("epoch {}", epoch);
+        //println!("epoch {}", epoch);
         let (train_batch_data, train_batch_label): (Tensor2d<f32, 784, BATCH_SIZE>, Tensor1d<usize, BATCH_SIZE>) 
             = load_mnist::select_random_n(&x_train, &t_train, &mut lcg);
 
@@ -61,17 +62,13 @@ fn main() {
 
 
         if epoch % PRINT_INTERVAL_OF_EPOCH == 0 {
-            dbg!("epoch print");
             let (test_batch, test_batch_label): (Tensor2d<f32, 784, BATCH_SIZE>, Tensor1d<usize, BATCH_SIZE>) 
                 = load_mnist::select_random_n(&x_test, &t_test, &mut lcg);
             
 
             let train_loss = model.loss(&mut train_batch_data.clone(), &train_batch_label);
-            dbg!("loss");
             let train_acc = model.accuracy(&train_batch_data, &train_batch_label);
-            dbg!("train acc");
             let test_acc = model.accuracy(&test_batch, &test_batch_label);
-            dbg!("test_acc");
             
             train_loss_list.push(train_loss);
             train_acc_list.push(train_acc);

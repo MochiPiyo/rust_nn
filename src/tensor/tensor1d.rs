@@ -1,6 +1,6 @@
 use super::{Num, TensorTrait, Tensor2d};
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Tensor1d<T, const N: usize> {
     pub body: Box<[T; N]>,
 

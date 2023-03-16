@@ -5,6 +5,8 @@ mod tensor1d;
 mod tensor2d;
 
 
+use std::fmt::Debug;
+
 pub use tensor1d::Tensor1d;
 pub use tensor2d::Tensor2d;
 pub use tensor_op::{_inner_product, add_matrix_mul, add_all_row, softmax_per_batch, cross_entropy_error_per_batch};
@@ -30,6 +32,7 @@ pub trait Num<Rhs = Self, Output = Self>:
     + Default
     + Copy
     + PartialOrd
+    + Debug
     
 {
     fn zero() -> Self;

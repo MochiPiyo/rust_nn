@@ -1,3 +1,5 @@
+use crate::tensor::TensorTrait;
+
 use super::{Num, tensor1d::Tensor1d, tensor2d::Tensor2d};
 
 
@@ -29,13 +31,33 @@ pub fn add_matrix_mul<T: Num, const N: usize, const M: usize, const S: usize>
     (left: &Tensor2d<T, N, M>, right: &Tensor2d<T, S, N>, output: &mut Tensor2d<T, S, M>)
 {
     //i, k, j 高速化
-    for i_n in 0..N {
-        for k_m in 0..M {
+    for i_m in 0..M {
+        for k_n in 0..N {
             for j_s in 0..S {
-                output.body[k_m][j_s] = left.body[k_m][i_n] * right.body[i_n][j_s];
+                output.body[i_m][j_s] += left.body[i_m][k_n] * right.body[k_n][j_s];
             }
         }
     }
+}
+#[test]
+fn matmul_test() {
+    let left = Tensor2d::new_from_array(
+        [[1.0, 2.0, 3.0],
+         [2.0, 3.0, 4.0],
+         [3.0, 4.0, 5.0]]
+    );
+    let right: Tensor2d<f32, 2, 3> = Tensor2d::new_fill_with(1.0);
+
+    let mut output = Tensor2d::new();
+    add_matrix_mul(&left, &right, &mut output);
+
+    let result = Tensor2d::new_from_array(
+        [[6.0, 6.0],
+         [9.0, 9.0],
+         [12.0, 12.0]]
+    );
+    //dbg!(output.clone());
+    assert_eq!(output, result);
 }
 
 

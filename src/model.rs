@@ -1,4 +1,4 @@
-use crate::random::{Lcg, LcgTrait};
+use crate::random::{Lcg, LcgTrait, he_init};
 
 use crate::tensor::TensorTrait;
 use crate::{layer_trait::LayerTrait, layers::{SoftmaxWithLoss, AffineLayer, ReluLayer}, tensor::{Tensor2d, Tensor1d}};
@@ -41,13 +41,9 @@ impl<
         //random generator
 
         //init weights with lcg
-        let mut weight1: Tensor2d<f32, HIDDEN_SIZE, INPUT_SIZE> 
-            = Tensor2d::new_fill_with(weight_init_std);
-        for row in weight1.body.iter_mut() {
-            for i in row.iter_mut() {
-                *i *= lcg.gen_0to1();
-            }
-        }
+        let weight1: Tensor2d<f32, HIDDEN_SIZE, INPUT_SIZE> 
+            = Tensor2d::new_from_vec(he_init(HIDDEN_SIZE * INPUT_SIZE, lcg));
+        
         let mut bias1: Tensor1d<f32, HIDDEN_SIZE>
             = Tensor1d::new_fill_with(weight_init_std);
         for i in bias1.body.iter_mut() {
@@ -55,13 +51,10 @@ impl<
         }
 
 
-        let mut weight2: Tensor2d<f32, OUTPUT_SIZE, HIDDEN_SIZE>
-            = Tensor2d::new_fill_with(weight_init_std);
-        for row in weight2.body.iter_mut() {
-            for i in row.iter_mut() {
-                *i *= lcg.gen_0to1();
-            }
-        }
+        let weight2: Tensor2d<f32, OUTPUT_SIZE, HIDDEN_SIZE>
+            = Tensor2d::new_from_vec(he_init(OUTPUT_SIZE * HIDDEN_SIZE, lcg));
+
+
         let mut bias2: Tensor1d<f32, OUTPUT_SIZE>
             = Tensor1d::new_fill_with(weight_init_std);
         for i in bias2.body.iter_mut() {
@@ -135,8 +128,13 @@ impl<
     }
 
     pub fn update_gradient(&mut self, input: &Tensor2d<f32, INPUT_SIZE, BATCH_SIZE>, label: &Tensor1d<usize, BATCH_SIZE>, learning_rate: f32) {
+        self.hidden = Tensor2d::new_fill_with(0.0);
+        self.hidden_relu = Tensor2d::new_fill_with(0.0);
+        self.out = Tensor2d::new_fill_with(0.0);
+        
         //forward
         self.affine1.forward(&input, &mut self.hidden);
+        //dbg!(self.hidden.clone());
         self.relu.forward(&self.hidden, &mut self.hidden_relu);
         self.affine2.forward(&self.hidden_relu, &mut self.out);
 
@@ -150,8 +148,8 @@ impl<
         self.affine1.backward(&mut dummy, &self.hidden);
 
         //update
-        self.affine1.update_gradient(learning_rate);
-        self.affine2.update_gradient(learning_rate);
+        self.affine1.update_gradient(BATCH_SIZE as f32,learning_rate);
+        self.affine2.update_gradient(BATCH_SIZE as f32,learning_rate);
     }
 
 }

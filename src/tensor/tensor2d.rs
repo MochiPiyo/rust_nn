@@ -19,7 +19,7 @@ Tensor2d<T, O, I>
 
 
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Tensor2d<T, const H: usize, const V: usize> {
     //vertical len: V, horizontal len: H
     pub body: Box<[[T; H]; V]>,
@@ -40,11 +40,12 @@ impl<T: Num, const H: usize, const V: usize> Tensor2d<T, H, V> {
         }
     }
 
-    pub fn new_from_vec(vec: Vec<[T; H]>) -> Self {
+    pub fn new_from_vec(vec: Vec<T>) -> Self {
         let mut body = Box::new([[T::default(); H]; V]);
-        for (self_row, vec_row) in body.iter_mut().zip(vec.iter()) {
-            for (self_i, vec_i) in self_row.iter_mut().zip(vec_row.iter()) {
-                *self_i = *vec_i;
+        let mut iter = vec.iter();
+        for self_row in body.iter_mut() {
+            for self_i in self_row.iter_mut() {
+                *self_i = *iter.next().unwrap();
             }
         }
         Self {

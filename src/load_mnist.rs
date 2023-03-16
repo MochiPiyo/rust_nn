@@ -99,7 +99,7 @@ pub fn selialize_minst(image_datas: &[[[u8; NUMBER_OF_COLUMNS]; NUMBER_OF_ROWS]]
 pub fn select_random_n<const BATCH_SIZE: usize>
     (datas: &Vec<[u8; 784]>, labels: &Vec<usize>, lcg: &mut Lcg) -> (Tensor2d<f32, 784, BATCH_SIZE>, Tensor1d<usize, BATCH_SIZE>)
 {
-    dbg!("select random");
+    //println!("select random {} from {}", BATCH_SIZE, datas.len());
     let max = datas.len();
     use std::collections::HashSet;
     let mut is_selected: HashSet<u32> = HashSet::new();
@@ -107,8 +107,9 @@ pub fn select_random_n<const BATCH_SIZE: usize>
     //select set of usize
     let mut select = 0;
     loop {
-        //0 + rand() * (max - min + 1) / (1 + RAND_MAX)
-        let this = lcg.gen() * max as u32 / u32::MAX;
+        
+        let this = lcg.gen() % max as u32;
+        //println!("{}, {}", select, this);
         if is_selected.contains(&this) {
             continue;
         }else {
@@ -119,12 +120,13 @@ pub fn select_random_n<const BATCH_SIZE: usize>
             }
         }
     }
-    dbg!("determin select numbes");
+    //dbg!("determin select numbes");
 
     let mut batch_datas: Tensor2d<f32, 784, BATCH_SIZE> = Tensor2d::new();
     for (i, target) in is_selected.iter().zip(batch_datas.body.iter_mut()) {
         for (data_i, target_i) in datas[*i as usize].iter().zip(target.iter_mut()) {
-            *target_i = *data_i as f32;
+            //
+            *target_i = *data_i as f32 / u8::MAX as f32;
         }
     }
     let mut batch_labels: Tensor1d<usize, BATCH_SIZE> = Tensor1d::new_usize();

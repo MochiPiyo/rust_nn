@@ -1,8 +1,10 @@
 mod affine_layer;
+mod relu_layer;
+mod softmax_with_loss;
+
+
 pub use affine_layer::AffineLayer;
 
-mod relu_layer;
 pub use relu_layer::ReluLayer;
 
-mod softmax_with_loss;
 pub use softmax_with_loss::SoftmaxWithLoss;

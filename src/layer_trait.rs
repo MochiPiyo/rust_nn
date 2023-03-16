@@ -14,7 +14,7 @@ pub trait LayerTrait<T: Num, const I: usize, const O: usize, const B: usize> {
     fn predict(&self, input: &Tensor2d<T, I, B>, output: &mut Tensor2d<T, O, B>);
 
     //apply gradient update, if it have gradient buffer, 
-    fn update_gradient(&mut self, learning_rate: T);
+    fn update_gradient(&mut self, batch_size: T,learning_rate: T);
 
     //(weight, bias)
     fn seek_weights(&self) -> Option<(Tensor2d<T, I, O>, Tensor1d<T, O>)> {

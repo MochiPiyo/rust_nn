@@ -2,6 +2,36 @@
 ## Second challenge
 2023_02_26
 
+
+oh s*it, it actually doesn't work.
+relu outputs all zero since second update and after all. but why?
+/*
+初回：
+affine1: gweight: //zero//->ok, gbias: ok
+affine2: gweight: ok, gbias: ok
+
+n:
+aff1: gw: zero, gbias: zero
+aff2: gw: zero, gbias: ok
+
+予想：問題は二つあって、初回以外reluがブロック＋weightの計算がおかしい
+→いや、それだと初回のaff2.gwがokなの説明つかない
+予想２：input_cacheが初回以外動いてない
+→いや、ではなぜ初回のaff1.gwは動かない？→動いている！
+↓
+すると、初回は全部動くが、次回からはaff2.gbしか動かないと。
+
+わかった、二回目以降でreluが全部0にしてる
+    */
+
+
+
+
+
+
+
+
+
 ## problems of previous cuallenge 
 the previous challenge was failed to make it "learn" the network because code was too complicated to find where the bug code is. The biggest factor is that "greedy translating" python code, especially numpy, made the code worse archtectured for Rust.
 

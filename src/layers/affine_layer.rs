@@ -5,8 +5,6 @@ pub struct AffineLayer<T: Num, const I: usize, const O: usize, const B: usize> {
     //TOI way, I is input_size, O is output_size
     weight: Tensor2d<T, O, I>,
     bias: Tensor1d<T, O>,
-    //
-    weight_transpozed: Tensor2d<T, I, O>,
     
     //B is batch size
     input_cach: Tensor2d<T, I, B>,
@@ -20,7 +18,6 @@ impl<T: Num, const I: usize, const O: usize, const B: usize> AffineLayer<T, I, O
         Self {
             weight: weight.clone(),
             bias,
-            weight_transpozed: weight.transpose(),
             input_cach: Tensor2d::new(),
             gradient_buffer_weight: Tensor2d::new(),
             gradient_buffer_bias: Tensor1d::new(),
@@ -29,7 +26,8 @@ impl<T: Num, const I: usize, const O: usize, const B: usize> AffineLayer<T, I, O
 }
 impl<T: Num, const I: usize, const O: usize, const B: usize> LayerTrait<T, I, O, B> for AffineLayer<T, I, O, B> {
     fn forward(&mut self, input: &Tensor2d<T, I, B>, output: &mut Tensor2d<T, O, B>) {
-        self.input_cach = input.clone();
+        let input_clone = input.clone();
+        self.input_cach = input_clone;
         self.gradient_buffer_weight = Tensor2d::new_fill_with(T::zero());
         self.gradient_buffer_bias = Tensor1d::new_fill_with(T::zero());
 
@@ -46,7 +44,7 @@ impl<T: Num, const I: usize, const O: usize, const B: usize> LayerTrait<T, I, O,
 
 
         //gradient for next layer
-        add_matrix_mul(dinput, &self.weight_transpozed, doutput);
+        add_matrix_mul(dinput, &self.weight.clone().transpose(), doutput);
         //(return doutput)
     }
 
@@ -60,14 +58,37 @@ impl<T: Num, const I: usize, const O: usize, const B: usize> LayerTrait<T, I, O,
         add_matrix_mul(input, &self.weight, output);
     }
 
-    fn update_gradient(&mut self, learning_rate: T) {
+    fn update_gradient(&mut self, batch_size: T, learning_rate: T) {
+        //get average of gradient
+        self.gradient_buffer_weight.div_scalar(batch_size);
+        self.gradient_buffer_bias.div_scalar(batch_size);
+
         self.gradient_buffer_weight.mul_scalar(learning_rate);
         self.gradient_buffer_bias.mul_scalar(learning_rate);
-        
+       
         //SubAssignは&で引数とらないので-=にするとcloneが必要
         //this .sub() is original tensor fnction
         self.weight.sub(&self.gradient_buffer_weight);
         self.bias.sub(&self.gradient_buffer_bias);
+
+        /*
+        初回：
+        affine1: gweight: //zero//->ok, gbias: ok
+        affine2: gweight: ok, gbias: ok
+        
+        n:
+        aff1: gw: zero, gbias: zero
+        aff2: gw: zero, gbias: ok
+        
+        予想：問題は二つあって、初回以外reluがブロック＋weightの計算がおかしい
+        →いや、それだと初回のaff2.gwがokなの説明つかない
+        予想２：input_cacheが初回以外動いてない
+        →いや、ではなぜ初回のaff1.gwは動かない？→動いている！
+        ↓
+        すると、初回は全部動くが、次回からはaff2.gbしか動かないと。
+        
+        わかった、二回目以降でreluが全部0にしてる
+         */
     }
 
     fn get_output_buffer() -> Tensor2d<T, O, B> {
