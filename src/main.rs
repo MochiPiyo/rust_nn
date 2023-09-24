@@ -41,7 +41,7 @@ fn main() {
         = TwoLayerNet::new(weight_init_std, &mut lcg);
     
     //train setting
-    const EPOCH_NUM: usize = 10000;
+    const EPOCH_NUM: usize = 50000;
     const PRINT_INTERVAL_OF_EPOCH: usize = 100;
     const LEARNING_RATE: f32 = 0.01;
     println!("iter num: {}, batch size: {}, learning rate: {}", EPOCH_NUM, BATCH_SIZE, LEARNING_RATE);

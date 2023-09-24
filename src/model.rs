@@ -4,6 +4,7 @@ use crate::tensor::TensorTrait;
 use crate::{layer_trait::LayerTrait, layers::{SoftmaxWithLoss, AffineLayer, ReluLayer}, tensor::{Tensor2d, Tensor1d}};
 
 
+const A: usize = 1;
 
 pub struct TwoLayerNet<
     const INPUT_SIZE: usize,

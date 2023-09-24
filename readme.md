@@ -1,36 +1,42 @@
-# Non dependence Neural Net with Rust
-## Second challenge
+Non-Dependent Neural Network with Rust
+Second Challenge
+log Created on February 26, 2023 Learning completed on March 16, 2023, with He initialization.
+
+Problems from the Previous Challenge
+The previous challenge failed to make the network "learn" due # Non-Dependent Neural Network with Rust
+## Second Challenge
 
 `log
-2023_02_26 created
-2023_03_16 learing ok, with He init.
+Created on February 26, 2023
+
+Learning completed on March 16, 2023, with He initialization.
 `
 
-## problems of previous cuallenge 
-the previous challenge was failed to make it "learn" the network because code was too complicated to find where the bug code is. The biggest factor is that "greedy translating" python code, especially numpy, made the code worse archtectured for Rust.
+## Problems from the Previous Challenge 
+The previous challenge failed to make the network "learn" due to the complexity of the code, making it challenging to locate and fix bugs. The primary issue stemmed from attempting to directly translate Python code, especially numpy code, which resulted in suboptimal architecture for Rust.
 
-## improvemed points !
-So, this time, 
-- define tensor and tensor operation
-- const generics for layer size and their io tensor operation
-- native batch io support functions, layers
+## Improved Points 
+This time, we have made the following improvements:
 
-## result
-Good point
+- Separate tensors and tensor operations by define them with struct and trait (optimized for Rust).
+- Utilized const generics for layer sizes and their input-output tensor operations.
+- Rewrite functions and layers for batched data.
 
-- Well understanding of Deep learning, especially gradient backprops.
-- Super Type Safe nn model. Python never can't be like.
-- no dependences, so run everywhere compiler support, no changing for library update.
+## Results 
+Positive Aspects:
 
-Bad point
+- Profound understanding of deep learning, particularly gradient backpropagation.
+- A strongly type safe neural network model that surpasses Python's capabilities.
+- Zero external dependencies, making it compatible with any compiler that Rust supports.
 
-- a lot of code, time, thinking resource
-- Every execution of model learning is suspicious for bug while python libraries offer well validated components.
-- too much restriction from const generics.
-    - layers can't in a `Vec<>` even if `Vec<Box<dyn Trait>>` because LayerTrait has const generics, this means parameter is necessary like `dyn Traint<T, I, O>` but size of const generics I and O are different for eatch layer. 
-    - can't change model size after compiled. for instance, command line argument and dynamically size changing algorithm (ex: genetic learning) are outof case.
+Challenges Faced:
 
+- Significant investment in code development, time, and intellectual resources.
+- Suspicion of bugs with each model learning execution, in contrast to Python libraries offering well-validated components.
+- Excessive constraints from const generics:
+    - Layers cannot be stored in a `Vec<>` even if using `Vec<Box<dyn Trait>>` because `LayerTrait` employs const generics. This necessitates a parameter such as `dyn Trait<T, I, O>`. However, the sizes of const generics I and O vary for each layer.
+    - Inability to change the model size after compilation, preventing features like command-line arguments and dynamically adjusting algorithms (e.g., genetic learning).
 
-# future 
-- GPU: wgpu seems interesting because wide support OS, Hardware, even if Browsers(future). but auto generation of wgsl is challenging.
-- combination with cpu algorithms. written in rust, quite fast lang, we can write down low level algorithms in completery combined way.
+# Future Endeavors 
+- GPU Integration: The wgpu framework appears promising due to its wide-ranging support for operating systems, hardware, and even browsers in the future. However, generating wgsl (WebGPU Shading Language) automatically presents a challenge.
+- Synergy with CPU Algorithms: Written in Rust, a highly efficient language, we can seamlessly combine low-level algorithms.
