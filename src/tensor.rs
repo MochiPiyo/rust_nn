@@ -42,11 +42,6 @@ pub trait Num<Rhs = Self, Output = Self>:
     fn exp(self) -> Self;
 }
 
-fn a(x: Box<dyn Tensor>) {
-    match x {
-
-    }
-}
 
 impl Num for f32 {
     fn zero() -> Self {

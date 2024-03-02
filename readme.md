@@ -1,42 +1,38 @@
-Non-Dependent Neural Network with Rust
+# Learn MNIST with No Crate in Rust
 Second Challenge
-log Created on February 26, 2023 Learning completed on March 16, 2023, with He initialization.
 
-Problems from the Previous Challenge
-The previous challenge failed to make the network "learn" due # Non-Dependent Neural Network with Rust
-## Second Challenge
+```
+log
+2023/2/26 Created
 
-`log
-Created on February 26, 2023
+2023/3/16 Learning completed, with He initialization.
 
-Learning completed on March 16, 2023, with He initialization.
-`
+2024/3/12 Edit readme
+```
 
-## Problems from the Previous Challenge 
-The previous challenge failed to make the network "learn" due to the complexity of the code, making it challenging to locate and fix bugs. The primary issue stemmed from attempting to directly translate Python code, especially numpy code, which resulted in suboptimal architecture for Rust.
+## Problems from the Previous Challenge
+The previous challenge failed to enable the network to "learn" effectively due to the complexity of the code, making it difficult to locate and fix bugs. The primary issue was the attempt to directly translate Python code, especially numpy, which resulted in a bad architecture for Rust.
 
-## Improved Points 
-This time, we have made the following improvements:
+## Improved Points
+This time(second challenge), we have made the following improvements:
 
-- Separate tensors and tensor operations by define them with struct and trait (optimized for Rust).
+- Separated tensors and tensor operations by defining them with structs and traits (suitable for Rust).
 - Utilized const generics for layer sizes and their input-output tensor operations.
-- Rewrite functions and layers for batched data.
+- Rewrote functions and layers to handle batched data.
 
-## Results 
-Positive Aspects:
+## Results
+### Positive Aspects:
+- A profound understanding of deep learning, particularly gradient backpropagation.
+- A strongly type-safe neural network model that surpasses Python's capabilities.
+- Zero external dependencies, making it compatible with any OS and any hardware that Rust supports.
 
-- Profound understanding of deep learning, particularly gradient backpropagation.
-- A strongly type safe neural network model that surpasses Python's capabilities.
-- Zero external dependencies, making it compatible with any compiler that Rust supports.
-
-Challenges Faced:
-
+### Challenges Faced:
 - Significant investment in code development, time, and intellectual resources.
-- Suspicion of bugs with each model learning execution, in contrast to Python libraries offering well-validated components.
+- Suspected bugs with each model learning execution, in contrast to Python libraries that offer well-validated components.
 - Excessive constraints from const generics:
-    - Layers cannot be stored in a `Vec<>` even if using `Vec<Box<dyn Trait>>` because `LayerTrait` employs const generics. This necessitates a parameter such as `dyn Trait<T, I, O>`. However, the sizes of const generics I and O vary for each layer.
+    - Layers cannot be stored in a `Vec<>`, even if using `Vec<Box<dyn Trait>>`, because `LayerTrait` employs const generics. This necessitates a parameter such as `dyn Trait<T, I, O>`. However, the sizes of const generics I and O vary for each layer.
     - Inability to change the model size after compilation, preventing features like command-line arguments and dynamically adjusting algorithms (e.g., genetic learning).
 
-# Future Endeavors 
-- GPU Integration: The wgpu framework appears promising due to its wide-ranging support for operating systems, hardware, and even browsers in the future. However, generating wgsl (WebGPU Shading Language) automatically presents a challenge.
-- Synergy with CPU Algorithms: Written in Rust, a highly efficient language, we can seamlessly combine low-level algorithms.
+## Future Endeavors
+- **GPU Integration:** The wgpu framework appears promising due to its wide-ranging support for operating systems, hardware, and even browsers in the future. However, generating wgsl (WebGPU Shading Language) is a challenge.
+- **Synergy with CPU Algorithms:** Written in Rust, a highly efficient language, we can seamlessly combine low-level algorithms.
